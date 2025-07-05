@@ -12,9 +12,9 @@ The dissertation covers topics including:
 
 ## Files
 - `Dexter_O'Neill_Dissertation_Report.pdf` – Full dissertation document
-- `Latex_Source_Code` - Full latex code folder
-- `Bell-state-output.png`, `Grovers-circuit-diagram.png`, `Grovers-measurement-results.png` - Qiskit code output results
-- `Qiskit_Example_Code` - Bell state and grovers algorithm demostration code
+- `Latex_Source_Code/` - Full latex code folder
+- `Figures_Results/` - Qiskit code output results
+- `Qiskit_Example_Code/` - Bell state and grovers algorithm demostrative code
 
 ## Technologies
 - Qiskit, LaTeX, Jupyter
