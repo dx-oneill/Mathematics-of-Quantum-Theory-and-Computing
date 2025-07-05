@@ -17,7 +17,9 @@ The dissertation covers topics including:
 - `Qiskit_Example_Code/` - Bell state and grovers algorithm demostrative code
 
 ## Technologies
-- Qiskit, LaTeX, Jupyter
+- Qiskit
+- LaTeX
+- Jupyter
 
 ## Author
 **Dexter O'Neill**  
