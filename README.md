@@ -22,4 +22,4 @@ The dissertation covers topics including:
 ## Author
 **Dexter O'Neill**  
 BSc (Hons) Mathematics & Computer Science  
-Swansea University – Class of 2025
+Swansea University – 2025
