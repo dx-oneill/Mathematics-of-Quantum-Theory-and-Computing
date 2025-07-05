@@ -12,7 +12,7 @@ The dissertation covers topics including:
 
 ## Files
 - `Dexter_O'Neill_Dissertation_Report.pdf` – Full dissertation document
-- `latex source code`
+- `Latex_Source_Code`
 - `code result images`
 - `qiskit code`
 
