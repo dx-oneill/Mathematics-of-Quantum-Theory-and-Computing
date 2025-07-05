@@ -1,0 +1,51 @@
+\chapter{Extra Definitions}
+\label{appendix:A}
+
+\subsubsection{Fields}
+\noindent This definition uses the following reference for inspiration [6].
+
+\noindent A \textbf{field} \( \mathbb{F} \) is a mathematical structure consisting of a set of elements equipped with two binary operations: \textbf{addition} and \textbf{multiplication}, which satisfy the following properties:
+
+\begin{enumerate}
+    \item \textbf{Closure}: If \( a, b \in \mathbb{F} \), then \( a + b \in \mathbb{F} \) and \( a \cdot b \in \mathbb{F} \).
+    \item \textbf{Commutativity}: \( a + b = b + a \) and \( a \cdot b = b \cdot a \).
+    \item \textbf{Associativity}: \( (a + b) + c = a + (b + c) \) and \( (a \cdot b) \cdot c = a \cdot (b \cdot c) \).
+    \item \textbf{Distributive Law}: \( a \cdot (b + c) = a \cdot b + a \cdot c \).
+    \item \textbf{Additive identity}: There exists an element \( 0 \in \mathbb{F} \) such that for all \( a \in \mathbb{F} \), we have \( a + 0 = a \).
+    \item \textbf{Multiplicative identity}: There exists an element \( 1 \in \mathbb{F} \), with \( 1 \neq 0 \), such that for all \( a \in \mathbb{F} \), we have \( a \cdot 1 = a \).
+    \item \textbf{Additive inverse}: For each \( a \in \mathbb{F} \), there exists \( -a \in \mathbb{F} \) such that \( a + (-a) = 0 \).
+    \item \textbf{Multiplicative inverse}: For each \( a \neq 0 \), there exists \( a^{-1} \in \mathbb{F} \) such that \( a \cdot a^{-1} = 1 \).
+\end{enumerate}
+
+\noindent \textbf{Note:} you could also condense this to three axioms; \( \mathbb{F} \) forming two abelian groups, one with the binary operation + and the other with the binary operation \(\cdot\) and the distributive law must hold.
+\noindent \textbf{Example Fields} include \( \mathbb{R} \), \( \mathbb{C} \), and \( \mathbb{Z}/p\mathbb{Z} \) (finite fields)\\
+
+
+\subsubsection{Vector Spaces}
+
+A \textbf{vector space} is made up of four components:
+\begin{enumerate}
+    \item \textbf{A field} \( \mathbb{F} \): This is the scalars of the vector space. If it is useful to specify the field then the vector space is referred to as a vector space over the field \( \mathbb{F} \)
+    \item \textbf{A set of vectors \( V \)}: As long as there is no ambiguity then we just refer to the whole vector space as \( V \)
+    \item \textbf{Vector addition}: \( +: V \times V \to V \), satisfying commutativity, associativity, and the existence of an additive identity vector \( \mathbf{0} \) and additive inverses \( -\mathbf{v} \).
+    \item \textbf{Scalar multiplication}: \( \cdot: \mathbb{F} \times V \to V \), satisfying distributivity (for \( a (\mathbf{u} + \mathbf{v}) = a\mathbf{u} + a\mathbf{v} \) and \( (a + b)\mathbf{v} = a\mathbf{v} + b\mathbf{v} \)), associativity, and the existence of a multiplicative identity \( 1 \in \mathbb{F} \).
+\end{enumerate}
+
+\noindent These operations satisfy closure: \( \mathbf{u} + \mathbf{v} \in V \) and \( a\mathbf{v} \in V \) for all \( \mathbf{u}, \mathbf{v} \in V \) and \( a \in \mathbb{F} \).
+This definition was constructed with the help of reference [7].
+
+
+\subsubsection{Expected Values}
+\noindent \textbf{Expected values} are like the average result of all the possible outcomes. They are weighted based on the probability of each outcome occurring. The expected value can be calculated for discrete variables by:
+\begin{equation}
+\mathbb{E}[X] = \sum_i x_i \cdot P(x_i)
+\end{equation}
+Where $X$ is a random variable that takes the values \(x_i\) with probabilities \( P(x_i) \).
+
+\subsubsection{Probability Distributions}
+A \textbf{Probability distribution} is simply a function P that maps all possible outcomes to a value for probability. satisfying the following:
+\begin{enumerate}
+    \item All probabilities must be between 0 and 1, \(0\leq P(x_i) \leq 1\)
+    \item All probabilities must sum to 1, \(\sum_i P(x_i) = 1\)
+\end{enumerate}
+

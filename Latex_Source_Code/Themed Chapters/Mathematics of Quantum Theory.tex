@@ -1,0 +1,819 @@
+\chapter{Mathematics of Quantum Theory}
+
+\section{Introduction}
+
+\noindent These foundations of quantum theory aim to give a surface-level understanding in order to describe how it is leveraged to create quantum computer systems capable of outperforming classical systems. The section will begin with the mathematical necessities, and then move onto applying these tools to understand and mathematically represent quantum phenomena. Quantum mechanics is deeply intertwined with quantum computing, it is a branch of physics that aims to understand matter and energy on a very small, atomic, and sub-atomic scale. Unlike classical physics where everything acts in a deterministic manner, in quantum mechanics the world operates on a probabilistic framework. Particles are described as clouds of probabilities rather than solid ball-like particles. A law that demonstrates this indeterministic world well is Heisenberg's Uncertainty Principle, here $\Delta x$ is the uncertainty in position, $\Delta p$ is the uncertainty in momentum and $\hbar$ is the reduced Planck constant, defined as $\hbar = \frac{h}{2\pi}$ from [5]:
+
+\[
+\Delta x \cdot \Delta p \geq \frac{\hbar}{2}
+\]
+
+\noindent To paraphrase Dirac [3], Heisenberg's Uncertainty Principle shows the fundamental limitations of simultaneous measurement of two values, as long as they don't commute (the measurement of one property influences the other property). Essentially when measuring a pair of properties that conform to this principle (e.g. position and momentum), the act of measuring the value of one property more accurately, leads to the accuracy that the second property can be measured at, to decrease. This topic will be analysed in further detail later this chapter. Additional key concepts we will look to understand in this section are Superposition, Quantum Entanglement and Quantum teleportation.
+\\
+First, we will set the stage for understanding how quantum mechanics drives the development of quantum computers and will prepare the reader with the preliminaries needed for fully understanding the subsequent sections.
+
+
+
+\section{Mathematical Basis/Preliminaries}
+
+\subsection{Linear Algebra}
+
+Linear Algebra is a crucial area of mathematics necessary for the mathematical formulation and providing a framework for understanding quantum theory. Here we will cover the essential linear algebra tools. Concepts like quantum states, qubits and quantum gates can be naturally described using some of these tools such as, vector spaces, matrices and linear transformations. For reference, definitions of fields and vector spaces can be found in appendix A.
+
+
+
+\subsubsection{Inner Product Spaces}
+
+An \textbf{inner product space} is a vector space \( V \) over a field \( \mathbb{F} \), equipped with an \textbf{inner product}:
+\[
+\langle \mathbf{u}, \mathbf{v} \rangle: V \times V \to \mathbb{F}
+\]
+Satisfying these properties, for all \( \mathbf{u}, \mathbf{v}, \mathbf{w} \in V \) and scalars \( a \in \mathbb{F} \):
+\begin{enumerate}
+    \item \textbf{Conjugate Symmetry}: \( \langle \mathbf{u}, \mathbf{v} \rangle = \overline{\langle \mathbf{v}, \mathbf{u} \rangle} \).
+    \item \textbf{Linearity in the First Argument}: \( \langle a\mathbf{u} + \mathbf{v}, \mathbf{w} \rangle = a \langle \mathbf{u}, \mathbf{w} \rangle + \langle \mathbf{v}, \mathbf{w} \rangle \).
+    \item \textbf{Positivity}: \( \langle \mathbf{v}, \mathbf{v} \rangle \geq 0 \), \(\forall \mathbf{v} \in V\)
+ with equality if and only if \( \mathbf{v} = \mathbf{0} \).
+\end{enumerate}
+
+
+\noindent A common example is \( \mathbb{C}^n \) with the \textbf{inner product}:
+\begin{equation}
+\langle \mathbf{u}, \mathbf{v} \rangle = \sum_{i=1}^{n} u_i \overline{v_i}.
+\end{equation}
+
+\subsubsection{Orthogonality}
+
+Two vectors \( \mathbf{u}, \mathbf{v} \in V \) are said to be \textbf{orthogonal} if their inner product is zero:
+\[
+\langle \mathbf{u}, \mathbf{v} \rangle = 0.
+\]
+
+
+
+\subsubsection{Normalization}
+A vector \( \mathbf{v} \in V \) is \textbf{normalized} if its norm is 1, where the norm is defined as:
+\begin{equation}
+\|\mathbf{v}\| = \sqrt{\langle \mathbf{v}, \mathbf{v} \rangle}.
+\end{equation}
+
+\noindent In quantum mechanics, quantum state vectors must be normalized to satisfy probability conservation.
+
+\subsubsection{Orthonormality}
+A set of vectors \( \{\mathbf{v}_1, \mathbf{v}_2, \dots, \mathbf{v}_n\} \) is \textbf{orthonormal} if:
+\begin{enumerate}
+    \item The vectors are all \textbf{orthogonal} with every other vector: \( \langle \mathbf{v}_i, \mathbf{v}_j \rangle = 0 \) for \( i \neq j \).
+    \item Each vector is \textbf{normalized}: \( \langle \mathbf{v}_i, \mathbf{v}_i \rangle = 1 \).
+\end{enumerate}
+
+
+\subsubsection{Basis of a Vector Space}
+A set of vectors \( \{\mathbf{v}_1, \mathbf{v}_2, \dots, \mathbf{v}_n\} \) in \( V \) is a \textbf{basis} of the vector space if:
+\begin{enumerate}
+    \item It is \textbf{linearly independent}, so no vector in the set can be written as a linear combination of the others.
+    \item It \textbf{spans} \( V \), so every \( \mathbf{v} \in V \) can be written as a linear combination of the basis vectors:
+    \[
+    \mathbf{v} = a_1 \mathbf{v}_1 + a_2 \mathbf{v}_2 + \dots + a_n \mathbf{v}_n, \quad a_i \in \mathbb{F}.
+    \]
+\end{enumerate}
+
+\noindent If a basis consists of \( n \) vectors, the vector space has \textbf{dimension} \( n \), written as \( \dim V = n \).  \\
+\noindent From inner product spaces to here reference [8] was used. 
+
+\subsubsection{Eigenvectors and Eigenvalues}
+Let \( A \) be a square matrix. A vector \( \mathbf{v} \) is an \textbf{eigenvector} of \( A \) if:
+\begin{equation}
+    A\mathbf{v} = \lambda \mathbf{v},
+\end{equation}
+\noindent where \( \lambda  \) is a scalar element of \( \mathbb{F} \) and the corresponding \textbf{eigenvalue} to the eigenvector. The eigenvalues are found by solving the characteristic polynomial:
+\begin{equation}
+    \det(A - \lambda I) = 0,
+\end{equation}
+where \( I \) is the identity matrix. The set of all eigenvalues is called the \textbf{spectrum} of \( A \).\\
+
+\noindent \textbf{Note} you can see by equation 2.3 that multiplying the eigenvector \( \mathbf{v} \) by \( A \) does not affect the direction of the vector it just scales it by the scalar \( \lambda  \). In quantum mechanics properties such as energy or momentum are represented by hermitian operators. The eigenvalues represent potential measurement results, and the eigenvectors represent the potential states the system could collapse to upon measurement. [7] \& [9]
+
+
+\subsubsection{Hermitian Matrices}
+
+A \textbf{Hermitian matrix} is a square matrix with complex entries that is equal to its own conjugate transpose. That is, for a Hermitian matrix \( A \), we have:
+\begin{equation}
+A = A^\dagger,
+\end{equation}
+where \( A^\dagger \) denotes the conjugate transpose of \( A \). [10]
+\\
+
+\noindent \textbf{Note:} Hermitian matrices have two important properties:
+\begin{enumerate}
+    \item All eigenvalues of a Hermitian matrix are real.
+    \item Eigenvectors corresponding to distinct eigenvalues are orthogonal.
+\end{enumerate}
+
+\noindent These properties make it clear as to why Hermitian matrices particularly useful for representing observables. Since eigenvalues correspond to possible measurement outcomes, Hermitian operators ensure that these outcomes are real. [9]
+
+
+\subsubsection{Unitary Matrices}
+A \textbf{Unitary matrix} satisfies the following equation:
+\begin{equation}
+U^\dagger U = UU^\dagger = I
+\end{equation}
+So can see that $U^\dagger$ is the same as $U$'s inverse.
+\\
+A unitary matrix $U$ doesn't have an affect on inner products or norms, that is, $\langle U\mathbf{u}, U\mathbf{v} \rangle = \langle \mathbf{u}, \mathbf{v} \rangle$ and $\| U\mathbf{v} \| = \| \mathbf{v} \|$.
+
+\noindent \textbf{Note} Quantum gates are represented using unitary matrices because they have to be reversible and preserve probability. The definition and note is from my understanding of reference [9].
+
+\subsubsection{Proof}
+
+Proof that for any unitary matrix \( U \in \mathbb{C}^{n \times n} \), and any vectors \( \mathbf{u}, \mathbf{v} \in \mathbb{C}^n \), the inner product is preserved:
+\[
+\langle U\mathbf{u}, U\mathbf{v} \rangle = \langle \mathbf{u}, \mathbf{v} \rangle.
+\]
+The standard inner product on \( \mathbb{C}^n \):
+\[
+\langle \mathbf{u}, \mathbf{v} \rangle = \mathbf{u}^\dagger \mathbf{v}.
+\]
+Using this definition:
+\[
+\langle U\mathbf{u}, U\mathbf{v} \rangle = (U\mathbf{u})^\dagger (U\mathbf{v}) = \mathbf{u}^\dagger U^\dagger U \mathbf{v}.
+\]
+\( U^\dagger U = I \), therefore:
+\[
+\mathbf{u}^\dagger U^\dagger U \mathbf{v} = \mathbf{u}^\dagger I \mathbf{v} = \mathbf{u}^\dagger \mathbf{v} = \langle \mathbf{u}, \mathbf{v} \rangle.
+\]
+
+\noindent Therefore inner product is preserved.
+
+
+
+\subsubsection{Change of Bases and Diagonalization}
+
+Linear transformations in a vector space are represented by matrices. The representation of the same linear transformation changes for different basis. If we say that matrix \( A \) represents some linear transformation in an arbitrary basis and \( P \) is the change in basis matrix whose columns are the new basis vectors. Then we can find the new representation of the same linear transformation for the new basis by:
+\begin{equation}
+A' = P^{-1} A P
+\end{equation}
+Diagonalization is essentially a specific case of a change of basis when you change to a basis made up of the eigenvectors of the original linear transformation matrix \( A \). Diagonalization is for simplifying \( A \) into a diagonal matrix \( D \) using this specific change of basis.
+\begin{equation}
+D = P^{-1} A P
+\end{equation}
+\noindent \textbf{Note} This is particularly convenient in quantum theory as measurement operators are commonly hermitian therefore they are diagonalizable. So we can easily see all the eigenvalues/possible measurement results and the basis is simply the eigenvectors/the possible states upon collapse. [9]
+
+
+\subsubsection{Pauli Matrices}
+There are three \textbf{Pauli matrices}, they are 2x2 complex matrices that are fundamental to quantum theory and quantum computing especially. They are:
+\[
+X = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}, \quad
+Y = \begin{bmatrix} 0 & -i \\ i & 0 \end{bmatrix}, \quad
+Z = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}
+\]
+
+\noindent\textbf{Properties of Pauli Matrices:} They are all Hermitian matrices. They are all Unitary matrices. They have all have the eigenvalues +1 and -1. When they are squared you get the identity matrix. While the identity matrix isn't technically one of the pauli matrices it is included in the pauli basis \( \{ I, X, Y, Z \} \) as this set can form a basis for all 2x2 Hermitian matrices. Hence, all 2x2 Hermitian matrices can be represented as a linear combination of these four.
+\noindent\textbf{Note} The Pauli matrices are used in quantum computing to represent quantum gates as you will see later. This section used [11] as a source.
+
+
+
+\subsection{Laws of Probability}
+As we mentioned earlier quantum theory is inherently probabilistic unlike classical physics in which systems are deterministic. What is meant by this is the outcome/result of a system is not determined until it is measured, up until that point what exists is a combination of all the systems possible results with corresponding probabilities. Hence, probability theory allows us to work with this concept of uncertainty. I will define a probability space and the laws it's governed by and the key ideas that follow. The following definition is adapted from the formulation presented in [12]. Also, definitions of expectation values and probability distributions can be found in appendix A, as we will look at two distributions in the qubit chapter; the Bernoulli distribution, this can accurately model the measurement of a qubit, and the Binomial distribution this can model a repeated identical qubit measurement to find the probability of a certain measurement outcome occurring.
+
+\subsubsection{Probability Spaces}
+A \textbf{probability space} is made up of three components, the set of all possible outcomes (the sample space denoted by $\Omega$), the collection of events (events are subsets we are able to give probabilities too)(this collection is called the sigma algebra denoted by $\mathcal{F}$) and $P$ the probability value given to the events.
+
+\subsubsection{Kolmogorov’s Axioms}
+\begin{enumerate}
+    \item \textbf{Non-negativity Axiom:}
+            \begin{equation}
+            \forall  A \in \mathcal{F},  P(A) \geq 0
+            \end{equation}
+    \item \textbf{Normalisation Axiom:}
+            \begin{equation}
+            P(\Omega) = 1
+            \end{equation}
+    \item \textbf{Additivity Axiom:}\\
+            \begin{equation}
+            P\left( \bigcup_{i=1}^\infty A_i \right) = \sum_{i=1}^\infty P(A_i)
+            \end{equation}
+            \textbf{Note:} A more intuitive representation, \( P(A_1 \cup A_2) = P(A_1) + P(A_2) \)
+\end{enumerate}
+
+
+
+\subsection{Quantum Theory Specific Mathematics}
+\noindent Now we will build on the mathematical concepts we have so far introduced, to develop an understanding of the language that is used to describe quantum theory and computing. While finishing defining a specific  space equipped with useful mathematical tools/objects that we can use to represent and manipulate the physical realm. We will cover, Dirac Notation, Hilbert spaces and linear operators these will be used throughout the remainder of the report to describe topics such as, superposition, observable, quantum gates.
+
+
+\subsubsection{Dirac Notation}
+\noindent \textbf{Dirac notation} or \textbf{Bra-Ket notation}, from [3], is an alternative way of denoting specific vectors. It is the standard in quantum mechanics as it is a concise, compact and clear way to represent states.\\
+Let \( a, b \in \mathbb{C}^2 \). Then we define:
+
+\begin{itemize}
+    \item \textbf{Ket:} \(|a\rangle = \begin{pmatrix} a_1 \\ a_2 \end{pmatrix}\)
+    \\
+
+    \item \textbf{Bra:} \(\langle b| = \begin{pmatrix} b_1^*, & b_2^* \end{pmatrix}\)
+    \\
+    
+    \item \textbf{Bra–Ket (Inner Product):} \(\langle b | a \rangle = a_1 b_1^* + a_2 b_2^* \in \mathbb{C}\)
+    \\
+
+    \item \textbf{Ket–Bra (Outer Product):}
+    \(|a\rangle \langle b| = 
+    \begin{pmatrix} a_1 \\ a_2 \end{pmatrix}
+    \begin{pmatrix} b_1^*, & b_2^* \end{pmatrix}
+    =
+    \begin{pmatrix}
+    a_1 b_1^* & a_1 b_2^* \\
+    a_2 b_1^* & a_2 b_2^*
+    \end{pmatrix}\)
+    \\
+
+    \item \textbf{Quantum State:} 
+    \(|\psi\rangle\)
+    \\
+
+    \item \textbf{Expected Value:}
+    \( \langle A\rangle = \langle \psi | A| \psi \rangle = \mathbb{E}(A)\)
+\end{itemize}
+
+
+
+
+\subsubsection{Hilbert Spaces}
+This definition was developed using [13]
+\begin{itemize}
+    \item A \textbf{Hilbert space} is an inner product space (A vector space $H$ over the fields \( \mathbb{R} \) or \( \mathbb{C} \) with an inner product $\langle \mathbf{u}, \mathbf{v} \rangle$).
+    \item The inner product of this space gives a norm equation (2.2). This norm must make $H$ into a complete metric space (A space where every Cauchy sequence converges to a point within the space).
+\end{itemize}
+\noindent \textbf{Note} (from [14]) one key property of a Hilbert space is that it must contain an orthonormal basis. A basis \( \{ x_1, x_2, \dots, x_n \} \) that allows any vector \( v \in H \) to be expressed in the form:
+\begin{equation}
+v = \sum_{i=1}^n \langle x_i, v \rangle x_i
+\end{equation}
+Every inner product coefficient \( \langle x_i, v \rangle \) gives the amplitude of \( v \) in respect to \( x_i \) or how much of \( v \) points in the direction of \( x_i \), this represents the probability amplitude in quantum mechanics. The orthogonality property of orthonormal basis makes sure that the amplitudes are independent and the normalisation property makes sure the total probability equals one when the vector is normalised.
+
+
+
+
+
+\subsubsection{Linear Operators}
+For this section we have source [11].
+A \textbf{linear operator} on a Hilbert space \( H \) is a Function \( F: H \to H \) that both additive and homogeneous. Hence,  \( \forall u, v \in H \) and all scalars \( c \in \mathbb{F} \):
+
+\begin{enumerate}
+    \item \textbf{Additive:} \( F(u + v) = F(u) + F(v) \)
+    \item \textbf{Homogeneous:} \( F(c v) = c F(v) \)
+\end{enumerate}
+
+\noindent These properties hold in all vector spaces. We have used Hilbert spaces for the definition here because they contain an inner product \( \langle \cdot, \cdot \rangle \). The benefit to this is that it allows us to define specific linear operators like adjoints, Hermitian operators, and unitary operators.
+
+\noindent In Dirac notation, a linear operator \( \hat{A} \) applied to a vector \( |u\rangle \in H \) is denoted as:
+\[
+\hat{A}|u\rangle
+\]
+
+\noindent In finite dimensional Hilbert spaces, linear operators can be represented by matrices. One example of this is the matrix
+\[
+A = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}
+\]
+This matrix acts as a linear operator in \( \mathbb{C}^2 \) so we can denote it as \( \hat{A} \). If we let \( |u\rangle = \begin{pmatrix} a \\ b \end{pmatrix} \) then the linear operator applied to this vector would look like this:
+\[
+\hat{A}|u\rangle = A|u\rangle = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} b \\ a \end{pmatrix} = \begin{pmatrix} b \\ a \end{pmatrix}
+\]
+
+\noindent \textbf{Note} you can see from this that linear operators can act as transformations on vectors.
+
+
+\noindent \textbf{Relevant Linear Operators:}
+\begin{itemize}
+    \item \textbf{Adjoint operator:} The adjoint of $\hat{A}$, denoted $\hat{A}^\dagger$, satisfies \(\langle u | \hat{A} v \rangle = \langle \hat{A}^\dagger u | v \rangle \quad \forall |u\rangle, |v\rangle \in H\)
+    
+    \item \textbf{Hermitian operator:} satisfies \( \hat{A} = \hat{A}^\dagger \) 
+    
+    \item \textbf{Unitary operator:} satisfies \( \hat{U}^\dagger \hat{U} = \hat{U} \hat{U}^\dagger = I \) and preserves inner products and norms
+\end{itemize}
+
+
+\section{Quantum States \& Superposition}
+\subsubsection{What is a Quantum State}
+A \textbf{quantum state} is a mathematical object, representing a quantum  that encodes all the information about a quantum system. It holds the information of the system's measurable properties and the probabilities of possible outcomes such that it is easily extractable. Mathematically a quantum state is generally described using the ket (state vector) \( | \psi \rangle \) in a Hilbert space $H$ over $\mathbb{C}$.  This formalism was developed by Dirac [3].
+
+\subsection{Superposition Principle}
+A key property of quantum states is the principle of \textbf{Quantum Superposition}. We can define this by saying that a present quantum state \( | \psi \rangle \) can be represented as a linear combination (superposition) of all the possible quantum states it could become. For example if we have two valid quantum states in $H$, \( | \psi_1 \rangle \) and \( | \psi_2 \rangle \) then we can say there is some quantum state \( | \psi \rangle \) such that:
+\begin{equation}
+     | \psi \rangle  = c_1 | \psi_1 \rangle + c_2 | \psi_2 \rangle, \quad c_1, c_2 \in \mathbb{C}
+\end{equation}
+A source for a similar but equivalent definition to this can be found in [17].\\
+\noindent\textbf{Note:} Quantum states must be normalised by the equation \( \langle \psi| \psi \rangle = 1 \) this is necessary to determine probabilities and to make sure all the probabilities of outcomes totals to one. Another thing to add is here we interpret \( | \psi \rangle \) to be in a superposition of 
+\( | \psi_1 \rangle \) and \( | \psi_2 \rangle \) in a way that means the state \( | \psi \rangle \) physically exists as a combination of the other two until measurement.
+
+\noindent\textbf{Examples:}
+Quantum states can be in superpositions of discrete or continuous sets of outcomes, here we will look at an example of each.
+
+\paragraph{Discrete (Energy Levels):}
+
+Let there be a quantum system with three possible discrete energy level states \( |E_1\rangle, |E_2\rangle, |E_3\rangle \). The quantum system/state \(|\psi\rangle\) can exist in a superposition of these three states:
+\begin{equation}
+|\psi\rangle = c_1 |E_1\rangle + c_2 |E_2\rangle + c_3 |E_3\rangle
+\end{equation}
+where \( c_1, c_2, c_3 \in \mathbb{C} \). Each coefficient has a connection to the probability of measuring the quantum system to be in that corresponding energy level state. This states normalisation Condition:
+\begin{equation}
+|c_1|^2 + |c_2|^2 + |c_3|^2 = 1
+\end{equation}
+
+\paragraph{Continuous (Electron Position):}
+
+When considering properties like position of an electron ($x$), the number of outcomes is continuous. In this case we represent a quantum state by:
+\begin{equation}
+|\psi\rangle = \int c(x) |x\rangle \, dx
+\end{equation}
+This is because we still want the same sum of all possible positions multiplied by it's corresponding coefficient. So instead we can use an integral as essentially a continuous sum of the positions, $x$ multiplied by a function that gives the coefficients, $c(x)$, for each position as if there is a continuous number of positions there will be an equivalent mappable numbers of coefficients. The function \( c(x) \) turns out to be the wave function, as seen in [16], which we will soon look at in detail. This states normalisation Condition similarly to in [16]:
+\begin{equation}
+\int_{-\infty}^{\infty} |c(x)|^2 \, dx = 1
+\end{equation}
+
+
+\subsection{Probability Amplitudes}
+\subsubsection{Probability Amplitudes}
+\noindent When we represent a state as a superposition of it's potential resultant states, so
+\begin{equation}
+     | \psi \rangle  = \sum_i c_i | \psi_i \rangle, \quad c_i \in \mathbb{C}
+\end{equation}
+We have coefficients for each resultant state $c_i$, these are called the probability amplitudes. Their magnitudes squared $|c_i|^2$ are the probabilities of their corresponding resultant state occurring upon measurement. This is formally known as the born rule.
+
+
+
+\subsubsection{The Born Rule}
+This definition and section took inspiration from source [18].\\
+The probability that a quantum state \( |\psi\rangle \) collapses onto a basis state \( |\psi_i\rangle \) during a projective measurement in an orthonormal basis \( \{|\psi_1\rangle, |\psi_2\rangle, \dots\} \) is given by:
+\begin{equation}
+P(\psi_i) = |\langle \psi_i | \psi \rangle|^2
+\end{equation}
+where \( \langle \psi_i | \psi \rangle \) is the inner product between the state vector and the basis state.
+
+\noindent \textbf{Note:} The total probability of all possible measurement outcomes sums to one:
+    \begin{equation}
+    \sum_i |\langle \psi_i | \psi \rangle|^2 = 1
+    \end{equation}
+This is due to the normalisation of the quantum states. Also notice this looks similar to the normalisation condition used for the energy level example above, but instead of \( c_i\) it's the inner product of the two states, shortly I will show that these two are equivalent. Now you can see the normalisation condition is crucial to ensure that you have a reasonable takeaway that all probabilities sum to one. \\
+
+
+\noindent As stated, for quantum states with a \textbf{discrete} number of outcomes the Born rule indicates probabilities of resultant states are:
+\begin{equation}
+P(\psi_i) =  |\langle \psi_i | \psi \rangle|^2 =| c_i|^2
+\end{equation}
+
+\subsubsection{Proof}
+Proof that \(c_i = \langle \psi_i | \psi \rangle\)\\
+\noindent If \( \{ |\psi_1\rangle, |\psi_2\rangle, \dots, |\psi_n\rangle \} \) is an orthonormal basis for the Hilbert space $H$. Then a quantum state in $H$ can be written as:
+\[
+|\psi\rangle = \sum_{i=1}^n c_i |\psi_i\rangle
+\]
+
+\noindent Now take the inner product of both sides with basis state \( \langle \psi_j | \):
+\[
+\langle \psi_j | \psi \rangle = \left\langle \psi_j \middle| \sum_{i=1}^n c_i |\psi_i\rangle \right\rangle = \sum_{i=1}^n c_i \langle \psi_j | \psi_i \rangle
+\]
+Because the basis is orthonormal:
+\[
+\langle \psi_j | \psi_i \rangle  =
+\begin{cases}
+1 & \text{if } i = j, \quad \text{because every vector in a orthonormal basis is normalised}\\
+0 & \text{if } i \neq j,  \quad \text{because every two vectors in a orthonormal basis are orthogonal}
+\end{cases}
+\]
+This means all the terms in the sum disappear except the one where \( i = j \), so:
+\[
+\langle \psi_j | \psi \rangle = c_j
+\]
+
+\noindent This proves that the coefficients in a superposition of a quantum state is the inner product of the state and the corresponding basis vector. 
+
+
+\noindent This paragraph source [19] was used.
+\noindent For \textbf{continuous} sets of resultant states of the quantum state, the rule holds. But because we have an uncountably infinite basis we have to get a probability density instead, here we have $x$ as the basis state and the function of $c$ (the wave-function) \(P(x) =  |\langle x | \psi \rangle|^2 =| c(x)|^2 \). Because $| c(x)|^2$ is a density we have to integrate over an integral to get a probability of finding the particle within that interval.
+\begin{equation}
+    P(x \in [a,b]) = \int_a^b |c(x)|^2 \, dx
+\end{equation}
+\noindent This explains the normalisation condition (2.2) as you can intuitively think that this particle must be in some position so the boundary from positive to negative infinity equalling one makes sense.
+
+
+\subsubsection*{Example (Discrete Energy Levels)}
+
+Let the Quantum state be represented by:
+\[
+|\psi\rangle = \frac{1}{\sqrt{2}} |E_1\rangle + \frac{1}{2} |E_2\rangle + \frac{1}{2} |E_3\rangle
+\]
+
+\noindent Using the Born rule:
+\[
+P(E_1) = \left| \frac{1}{\sqrt{2}} \right|^2 = \frac{1}{2}, \quad
+P(E_2) = \left| \frac{1}{2} \right|^2 = \frac{1}{4}, \quad
+P(E_3) = \left| \frac{1}{2} \right|^2 = \frac{1}{4}
+\]
+
+\noindent Showing the normalisation:
+\[
+\frac{1}{2} + \frac{1}{4} + \frac{1}{4} = 1
+\]
+\noindent We can see the probability of the quantum state collapsing to the state $|E_1\rangle$ upon measurement is 50\%, and for both $|E_2\rangle$ and $|E_3\rangle$, 25\%.
+
+
+
+
+\subsection{Quantum Interference}
+
+Quantum Interference arises from superposition. Quantum systems existing in multiple states simultaneously means if there is any overlap of these states then the probability amplitudes of the states will interact with each other constructively or destructively, this is interference.
+
+\noindent Mathematically, the overlap between two quantum states \( |\psi_1\rangle \) and \( |\psi_2\rangle \) is quantified by their inner product \( \langle \psi_2 | \psi_1 \rangle \). If \( \langle \psi_2 | \psi_1 \rangle = 0 \), the states are orthogonal, which means no overlap, but as this approaches 1, the overlap increases causing larger interference. From source [22]
+
+\noindent An example of quantum interference is the double-slit experiment. In this experiment, particles are shot towards a barrier with two slits, A and B. After going through the slits the probability waves overlap, resulting in an interference pattern on the screen behind the barrier, from the probability amplitudes interfering constructively and destructively. 
+[21] was used to learn about the double-slit experiment.
+
+\subsection{Mixed States}
+This section is heavily inspired by [20] especially the density matrix definition and properties.\\
+So far the states that we have been describing by \(|\psi\rangle\) in $H$, are called \textbf{Pure States}. Pure states are quantum systems with the full information of the system being known. There also exists \textbf{Mixed States} these represent quantum systems where not all information is known, and they are just a classical statistical mix of pure states with their probabilities. Its important to note the uncertainty in the information of a mixed state is purely classical, a lack of knowledge not quantum uncertainty.
+
+\subsubsection{Density Matrices} 
+We can use a Density matrix $\rho$ to define both pure and mixed states.
+\begin{equation}
+    \rho = \sum_i p_i|\psi_i \rangle \langle\psi_i|
+\end{equation}
+\noindent Here \( |\psi_i \rangle\) is a pure state. $p_i$ are the classical probabilities such that $\sum_i p_i = 1$. Density matrices are hermitian $\rho = \rho^\dagger$, positive semi-definite \(\langle \psi | \rho | \psi \rangle \geq 0, \quad \forall  |\psi\rangle\) and have a unit trace \( Tr(\rho) = 1\).\\
+\textbf{reminder:} The trace of a matrix is the sum of its diagonal elements.
+\noindent\textbf{Pure States}, if represented as a density matrix, will look like this; \(\rho = |\psi \rangle \langle\psi|\). Also, if pure \(Tr(\rho^2) = 1\).\\
+
+\noindent\textbf{Mixed States}, will adhere to the condition \(Tr(\rho^2) < 1\). I will give an example of a mixed state to exaggerate the difference between a classical statistical mixture with a quantum superposition. If we say our quantum system is represented by a coin then a superposition would be the coin spinning in the air. It's mathematically a combination of both possibilities rather than one or the other. A mixed state would be the same as a coin being flat in an envelope, you know it is definitely one state or the other but you don't which due to a classical lack of information. 
+
+
+
+
+\section{Uncertainty}
+For this section we use a combination of sources [3],[11],[23].\\
+We briefly touched on \textbf{uncertainty} at the start of this chapter. To recap when two observables of a quantum system, that satisfy non-commutativity, are measured simultaneously, there is a fundamental limit to the accuracy that can be achieved by these simultaneous measurements. Not due to lack of human measurement capabilities, but due to an inherent uncertainty in the specifics of these observables by the laws of nature.\\
+
+\noindent\textbf{General Uncertainty Relation}\\
+The mathematical formalism of this relation is as follows:\\
+Let $\hat{A}$ and $\hat{B}$ be Hermitian operators that represent two observables of the quantum state $|\psi \rangle$. Then the general uncertainty relation is:
+\begin{equation}
+    \Delta A \cdot \Delta B \geq \frac{1}{2} \left| \langle \psi| [\hat{A}, \hat{B}] | \psi \rangle \right| \quad \text{or} \quad  \Delta A \cdot \Delta B \geq \frac{1}{2} \left| \langle [\hat{A}, \hat{B}] \rangle \right|
+\end{equation}
+Where \( \Delta \hat{A} = \hat{A} - \langle \hat{A} \rangle \) and \( \Delta \hat{B} = \hat{B} - \langle \hat{B} \rangle \) are the deviation operators. From these the following standard deviations (uncertainties) can be derived \( \Delta A = \sqrt{ \langle (\Delta \hat{A})^2 \rangle } \) and \( \Delta B = \sqrt{ \langle (\Delta \hat{B})^2 \rangle } \). Finally, \( [\hat{A}, \hat{B}] = \hat{A}\hat{B} - \hat{B}\hat{A} \) is the commutator of the operators (quantifier of how much the measurement of each affects the other). Simarly to in [11] and [23]\\
+
+\noindent\textbf{Derivation}\\
+\noindent Now we will show that the equation we used in the introduction follows from this general equation.
+
+\noindent Let \( \hat{x} \text{ and } \hat{p}\) represent the position and momentum operators respectively. Then we define the uncertainties as follows:
+
+\[
+\Delta \hat{x} = \hat{x} - \langle \hat{x}\rangle, \quad \Delta \hat{p} = \hat{p} - \langle \hat{p}\rangle
+\]
+
+\[
+\Delta x = \sqrt{\langle(\Delta \hat{x})^2\rangle}, \quad \Delta p = \sqrt{\langle(\Delta \hat{p})^2\rangle}
+\]
+\noindent Next the commutator is:
+
+\noindent\([\hat{x}, \hat{p}] = i\hbar\text{ [23] shows why, and because this is a scalar no matter the state the the expectation value is: }\\ \langle [\hat{x}, \hat{p}]\rangle = i\hbar\) in the formula we take the modulus of this so $i\hbar$ becomes just $\hbar$.
+
+\noindent Substituting all this in we get the earlier variation of the uncertainty principle:
+\begin{equation}
+\Delta x \cdot \Delta p \geq \frac{\hbar}{2}
+\end{equation}
+
+
+
+\section{Quantum Measurement}
+In classical systems measurements reveal pre-existing values (like in the mixed-state coin example), but quantum measurement is probabilistic and the action of measuring alters the system that's being observed. A quantum state contains the probabilities of different outcomes and measuring it collapses it to a definite state corresponding to the measured value.
+
+
+\subsection{Projective Measurement and Collapse}
+As previously mentioned Every observable (measurable physical quantity) is represented by a hermitian operator in the systems Hilbert space, its eigenvalues being the possible measurements and eigenvectors the corresponding state the system will collapse to upon measuring each eigenvalue. [9] is the source used for this section.
+
+\noindent If a system is in the state \( |\psi\rangle \), and we perform a measurement given by Hermitian operator \( \hat{M} \), then the probability of getting an eigenvalue \( m_i \) is given by the Born rule, from Section 3.3.2:
+
+\[
+P(m_i) = |\langle m_i | \psi \rangle|^2.
+\]
+
+\noindent This can also be written as \( \langle \psi | P_i | \psi \rangle \), where \( P_i = |m_i\rangle\langle m_i| \) is the operator that projects the system onto the state associated with the measurement result \( m_i \). The projective measurement on a state can be described as a set of projection operators $P_i$ this is the completeness equation:
+
+\begin{equation}
+ \sum_i P_i = I.
+\end{equation}
+
+\noindent Upon observing the outcome \( m_i \), the system's state collapses to \( |m_i\rangle \). This is known as the projection postulate.
+
+\paragraph{Example.}
+Let there be a system with orthonormal eigenstates \( |v_1\rangle, |v_2\rangle, |v_3\rangle \) with measurement outcomes \( v_1, v_2, v_3 \). If the initial state is
+
+\[
+|\psi\rangle = \frac{1}{\sqrt{2}} |v_1\rangle + \frac{1}{2} |v_2\rangle + \frac{1}{2} |v_3\rangle,
+\]
+
+\noindent then the measurement will be each outcome with the probabilities \( \frac{1}{2} \), \( \frac{1}{4} \), and \( \frac{1}{4} \), respectively. If the outcome  \( v_2\) is observed, the state collapses to/becomes \( |v_2\rangle \).
+
+
+\subsection{Schrödinger’s Equation}
+This section was written using source [9].
+\noindent While measurement describes how a quantum state changes upon observation, the changes over time or evolution in a quantum state, while there are no measurements, is described by the Schrödinger equation.
+
+\noindent As seen in [9] the time-dependent Schrödinger equation is:
+
+\begin{equation}
+i\hbar \frac{d}{dt}|\psi(t)\rangle = \hat{H}|\psi(t)\rangle,
+\end{equation}
+
+\noindent \( |\psi(t)\rangle \) is the state at time \( t \), \( \hbar \) is the reduced Planck constant, and \( \hat{H} \) is the Hamiltonian (a Hermitian operator that represents the total energy of a system). It determines how a system changes over time.
+
+\noindent On the other hand (also as seen in [9]), if the Hamiltonian is time-independent (the $\hat{H}$ operator doesn't change over time) then the solution to the Schrödinger equation is:
+
+\begin{equation}
+|\psi(t)\rangle = e^{-i\hat{H}t/\hbar} |\psi(0)\rangle.
+\end{equation}
+
+\noindent \( e^{-i\hat{H}t/\hbar} \) is a unitary operator, so as stated earlier it preserves the norm and inner products of the states, so the total probability stays equal to 1 no matter the time.
+
+\noindent The Hamiltonian also decides the stationary states, these are states \( |E_n\rangle \) that satisfy:
+
+\begin{equation}
+\hat{H} |E_n\rangle = E_n |E_n\rangle,
+\end{equation}
+
+\noindent where \( E_n \) is the energy for that state. A stationary state doesn't change as time passes.
+
+\subsubsection*{Example}
+Let there be a system with two energy levels with orthonormal stationary states \( |E_0\rangle \) and \( |E_1\rangle \), and energies \( E_0 \) and \( E_1 \). Therefore:
+\[
+\hat{H} |E_0\rangle = E_0 |E_0\rangle, \quad \hat{H} |E_1\rangle = E_1 |E_1\rangle
+\]
+
+\noindent The system starts in the superposition at time 0:
+
+\[
+|\psi(0)\rangle = \frac{1}{\sqrt{2}}|E_0\rangle + \frac{1}{\sqrt{2}}|E_1\rangle.
+\]
+
+\noindent this is a normalised superposition so it's valid:
+\[
+\langle\psi(0)|\psi(0)\rangle = 0.5 + 0.5 = 1
+\]
+
+\noindent Since $\hat{H}$ is time independent we have:
+\[
+|\psi(t)\rangle = e^{-i\hat{H}t/\hbar} |\psi(0)\rangle.
+\]
+
+\noindent Substituting the initial state into this equation and accounting for (3.32) ($\hat{H}$ is replaced with the respective energies) we get:
+
+\[
+|\psi(t)\rangle = \frac{1}{\sqrt{2}} e^{-iE_0 t/\hbar} |E_0\rangle + \frac{1}{\sqrt{2}} e^{-iE_1 t/\hbar} |E_1\rangle.
+\]
+
+\noindent While the coefficients change over time the probability remains constant.
+
+
+\section{Entanglement}
+Entanglement is a concept unique to quantum theory, there is no classical equivalent. As inferred by [18], entanglement is when you have a compound quantum state, where the states that make it up can't be described separately. These certain compound systems have properties that defy classical common sense. For example, the locality of the particles in such a system doesn't have an impact on the results, this is what Einstein called \textit{"Spooky action at a distance"}. Entanglement is a powerful concept that quantum computers take advantage of.
+
+
+\subsection{Tensor Product of Hilbert Spaces}
+The following section can largely be found in different phrasing in source [9].\\
+\noindent For compound quantum systems we need to combine the Hilbert spaces of the individual systems to make a space that captures the full compound system. We do this by using the Tensor Product.
+
+\noindent If we have Hilbert spaces of two systems, $H_1$ and $H_2$. Then the tensor product space \( H_1 \otimes H_2\) is a new Hilbert space containing all possible joint states of the systems.
+
+\noindent If $|\psi\rangle$ and $|\phi\rangle$ are both states in the individual systems then the tensor product, denoted by \( |\psi\rangle \otimes |\phi\rangle \text{ or } |\psi\phi\rangle\), represents a joint state in the compound system. Example of a tensor product of two vectors:
+
+
+\noindent Let:
+\[
+|0\rangle = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \quad
+|1\rangle = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.
+\]
+
+\noindent Then their tensor product is:
+\[
+|0\rangle \otimes |1\rangle =
+\begin{bmatrix}
+1 \cdot 0 \\
+1 \cdot 1 \\
+0 \cdot 0 \\
+0 \cdot 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\
+1 \\
+0 \\
+0
+\end{bmatrix}
+= |01\rangle.
+\]
+
+\noindent This new 4-dimensional vector is in the space:
+\[
+\mathbb{C}^2 \otimes \mathbb{C}^2 = \mathbb{C}^4.
+\]
+
+\noindent Similarly for matrices, If \( A \in \mathbb{C}^{m \times n} \), \( B \in \mathbb{C}^{p \times q} \), then their tensor product (also called the Kronecker product) is:
+
+\[
+A \otimes B =
+\begin{bmatrix}
+a_{11} B & a_{12} B & \cdots \\
+a_{21} B & a_{22} B & \cdots \\
+\vdots   & \vdots   & \ddots
+\end{bmatrix}
+\in \mathbb{C}^{mp \times nq}.
+\]
+
+
+
+\noindent The inner product of some new tensor product space is simply:
+
+\[
+\langle \psi \otimes \phi | \psi' \otimes \phi' \rangle = \langle \psi | \psi' \rangle \cdot \langle \phi | \phi' \rangle,
+\]
+
+\noindent If \( \{|i\rangle\} \) and \( \{|j\rangle\} \) are orthonormal bases for each of the individual systems, then \( \{|i\rangle \otimes |j\rangle\} \) is an orthonormal basis for the compound system. For example, if both individual systems have basis a \( \{|0\rangle, |1\rangle\} \), the compound systems basis is:
+
+\[
+\{|00\rangle, |01\rangle, |10\rangle, |11\rangle\},
+\]
+
+\noindent The dimension of the compound space is the product of the two individual spaces dimensions so here the dimension is \( 2 \times 2 = 4 \).
+
+\noindent Tensor products can also be used with operators to describe how the compound system is measured or changes over time. If we say $M$ is an operator in just one of the individual systems then \( M \otimes I \), where \( I \) is the identity operator on the other individual system, is an operator that affects one system while not affecting the other. This is useful for when just one part of a combined system is being manipulating.
+
+\subsubsection{Example}
+Let an individual system be in the state \( |\psi\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) \) and another individual system in the state \( |\phi\rangle = |0\rangle \). Then the joint state is:
+
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle),
+\]
+
+
+\noindent This is an example of a joint state where each state can still be defined individually, next we will look at when this isnt the case (the two systems are entangled).
+
+\subsection{Separable and Entangled States}
+Compound systems are modelled by tensor product spaces. These spaces have two different types of joint states, separable states and entangled states. Similar definitions can be found in source [36].
+
+
+\subsubsection{Separable States}
+\noindent Lets say we have some state \( |\psi\rangle \in H_1 \), another state \( |\phi\rangle \in H_2 \) and a joint state \( |\Psi\rangle \in H_1 \otimes H_2 \). A separable state can be written as the tensor product of the two individual system's states:
+\[
+|\Psi\rangle = |\psi\rangle \otimes |\phi\rangle,
+\]
+\noindent So the joint state is fully determined by the individual states. Here measuring or doing something to one state does not affect the other.
+
+\subsubsection{Entangled States}
+On the other hand, an entangled state cannot be described as the tensor product of the two individual system's states:
+\[
+|\Psi\rangle \neq |\psi\rangle \otimes |\phi\rangle.
+\]
+\noindent In this case there doesn't exist descriptions of each individual state outside of this joint state, they are inseparable. Because of this the joint state can only be treated as a whole, this is what leads to strange relations that transcend locality. 
+
+
+\subsubsection{Example (The Bell State)}
+The Bell State as seen in [9] is a common example an entangled state:
+
+\[
+|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle).
+\]
+This state can't be written as a tensor product of the individual states. Because there is no way to factor the sum \( |00\rangle + |11\rangle \) into a single tensor product. So, \( |\Phi^+\rangle \) is entangled. We will look further into this in chapter 3.\\
+
+
+\noindent \textbf{Note} The strange relation we talk about, or \textit{"Spooky action at a distance"}, is the outcome of the strong correlation between the two individual states if they are entangled. For example in the bell state if you measure one individual system to be \( |0\rangle \) then the state of he other is instantly know to be \( |0\rangle \) as well, no matter the distance of the two entangled systems. Entanglement can also happen between more than just two systems, this is a key component of quantum computing.
+
+
+\subsection{Reduced States and Loss of Information}
+This section follows on from section 2.3.4 where we discussed density matrices and traces.
+\noindent Let $A$ and $B$ be subsystems of a pure compound quantum system, the state of this pure compound system can be described by a density matrix $\rho_{AB}$ in the Hilbert space $H_A \otimes H_B$. To find information of just one subsystem lets say $A$ we take the partial trace of $\rho_{AB}$ over $B$ to get the reduced density matrix of $A$ denoted $\rho_{A}$ this is all written as, \(Tr_B(\rho_{AB}) = \rho_A\).
+\begin{equation}
+\rho_A = Tr_B(\rho_{AB}) = \sum_j (I_A \otimes \langle j|_B) \, \rho_{AB} \, (I_A \otimes |j\rangle_B)
+\end{equation}
+\noindent Where ${|j\rangle_B}$ is an orthonormal basis of $H_B$ and $I_A$ is the identity operator on $A$. This equation is from [24]. \\
+\noindent \textbf{Note} if the substates are separable then the reduced state is a pure state and vice versa. But if the states are entangled the reduced states are mixed states as described in section 2.3.4, this shows the loss of information when trying to look at just one of the substates.
+
+\subsubsection{Example}
+\noindent Here we will find the the reduced density matrix of a state.
+\noindent Let there be a compound system made up of subsystems $A$ and $B$. The compound system is in  the pure state:
+
+\[
+|\psi\rangle_{AB} = \frac{1}{\sqrt{2}} \left( |0\rangle_A \otimes |0\rangle_B + |1\rangle_A \otimes |1\rangle_B \right)
+= \frac{1}{\sqrt{2}} \left( |00\rangle + |11\rangle \right)
+\]
+
+\noindent First we'll write the density matrix $\rho_{AB}$:
+\[
+\rho_{AB} = |\psi\rangle_{AB} \langle \psi|
+= \left( \frac{1}{\sqrt{2}} (|00\rangle + |11\rangle) \right)
+\left( \frac{1}{\sqrt{2}} (\langle 00| + \langle 11|) \right)
+\]
+
+\noindent Factoring:
+\[
+\rho_{AB} = \frac{1}{2} (|00\rangle + |11\rangle)(\langle 00| + \langle 11|)
+\]
+\noindent Expanding:
+\[
+\rho_{AB} = \frac{1}{2} \left(
+|00\rangle\langle 00| +
+|00\rangle\langle 11| +
+|11\rangle\langle 00| +
+|11\rangle\langle 11|
+\right)
+=
+\begin{bmatrix}
+\frac{1}{2} & 0 & 0 & \frac{1}{2} \\
+0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 \\
+\frac{1}{2} & 0 & 0 & \frac{1}{2}
+\end{bmatrix}
+\]
+
+\noindent Now we take the partial trace of $\rho_{AB}$:
+
+\[
+\rho_A = \mathrm{Tr}_B(\rho_{AB}) = \rho_A = Tr_B(\rho_{AB}) = \sum_j (I_A \otimes \langle j|_B) \, \rho_{AB} \, (I_A \otimes |j\rangle_B)
+\]
+
+
+\noindent basis vectors of $B$ are \(
+\{ |0\rangle, |1\rangle \}
+\)
+ and
+\(
+I_A = \begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix}
+\) so substituting:
+
+\[
+\rho_A = 
+(\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix} \otimes \langle 0|) \rho_{AB} (\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix} \otimes |0\rangle) +
+(\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix} \otimes \langle 1|) \rho_{AB} (\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix} \otimes |1\rangle)
+\]
+
+
+\noindent The first term gives:
+\[
+\begin{bmatrix}
+\rho_{00,00} & \rho_{00,10} \\
+\rho_{10,00} & \rho_{10,10}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{1}{2} & 0 \\
+0 & 0
+\end{bmatrix}
+\]
+
+\noindent The second term gives:
+\[
+\begin{bmatrix}
+\rho_{01,01} & \rho_{01,11} \\
+\rho_{11,01} & \rho_{11,11}
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & 0 \\
+0 & \frac{1}{2}
+\end{bmatrix}
+\]
+
+\noindent So the reduced density matrix/reduced state is:
+\[
+\rho_A =
+\begin{bmatrix}
+\frac{1}{2} & 0 \\
+0 & 0
+\end{bmatrix}
++
+\begin{bmatrix}
+0 & 0 \\
+0 & \frac{1}{2}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{1}{2} & 0 \\
+0 & \frac{1}{2}
+\end{bmatrix}
+=
+\frac{1}{2} |0\rangle \langle 0| + \frac{1}{2} |1\rangle \langle 1|
+\]
+\noindent \textbf{Note} I ended up finding a very similar example online later so I will reference it here [25].\\
+
+\noindent
+This example shows how entanglement can have a subsystem in a mixed state, even if the whole system is in a pure state. It demonstrates that information in quantum systems isn't stored in individual parts. This idea is crucial in quantum computing, where entanglement is a major advantage for performing tasks that are impossible classically. In the next chapter, we’ll look at how these concepts form the foundation for building and understanding quantum logic to circuits and algorithms.
